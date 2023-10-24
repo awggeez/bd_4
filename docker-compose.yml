@@ -1,0 +1,119 @@
+version: '3'
+
+services:
+  library-postgres-master:
+    image: bitnami/postgresql-repmgr:latest
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: ABIEV_214
+      POSTGRESQL_USERNAME: postgres
+      POSTGRESQL_PASSWORD: ABIEV_214
+      POSTGRESQL_DATABASE: ABIEV_214
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: library-postgres-master
+      REPMGR_PARTNER_NODES: library-postgres-master,library-postgres-slave
+      REPMGR_NODE_NAME: node-1
+      REPMGR_NODE_NETWORK_NAME: library-postgres-master
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./docker/db/scripts/library:/docker-entrypoint-initdb.d/
+      - postgres_master_data:/bitnami/postgresql
+
+  library-postgres-slave:
+    image: bitnami/postgresql-repmgr:latest
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: ABIEV_214
+      POSTGRESQL_USERNAME: customuser
+      POSTGRESQL_PASSWORD: ABIEV_214
+      POSTGRESQL_DATABASE: ABIEV_214
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: library-postgres-master
+      REPMGR_PARTNER_NODES: library-postgres-master,library-postgres-slave
+      REPMGR_NODE_NAME: node-2
+      REPMGR_NODE_NETWORK_NAME: library-postgres-slave
+    ports:
+      - "5435:5432"
+    depends_on:
+      - library-postgres-master
+    volumes:
+      - postgres_slave_data:/bitnami/postgresql
+
+  trains-postgres-master:
+    image: bitnami/postgresql-repmgr:latest
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: ABIEV_214
+      POSTGRESQL_USERNAME: postgres
+      POSTGRESQL_PASSWORD: ABIEV_214
+      POSTGRESQL_DATABASE: ABIEV_214
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: trains-postgres-master
+      REPMGR_PARTNER_NODES: trains-postgres-master,trains-postgres-slave
+      REPMGR_NODE_NAME: node-1
+      REPMGR_NODE_NETWORK_NAME: trains-postgres-master
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./docker/db/scripts/trains:/docker-entrypoint-initdb.d/
+      - postgres_master_data:/bitnami/postgresql
+
+  trains-postgres-slave:
+    image: bitnami/postgresql-repmgr:latest
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: ABIEV_214
+      POSTGRESQL_USERNAME: customuser
+      POSTGRESQL_PASSWORD: ABIEV_214
+      POSTGRESQL_DATABASE: ABIEV_214
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: trains-postgres-master
+      REPMGR_PARTNER_NODES: trains-postgres-master,trains-postgres-slave
+      REPMGR_NODE_NAME: node-2
+      REPMGR_NODE_NETWORK_NAME: trains-postgres-slave
+    ports:
+      - "5437:5432"
+    depends_on:
+      - trains-postgres-master
+    volumes:
+      - postgres_slave_data:/bitnami/postgresql
+
+  ambulance-postgres-master:
+    image: bitnami/postgresql-repmgr:latest
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: ABIEV_214
+      POSTGRESQL_USERNAME: postgres
+      POSTGRESQL_PASSWORD: ABIEV_214
+      POSTGRESQL_DATABASE: ABIEV_214
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: ambulance-postgres-master
+      REPMGR_PARTNER_NODES: ambulance-postgres-master,ambulance-postgres-slave
+      REPMGR_NODE_NAME: node-1
+      REPMGR_NODE_NETWORK_NAME: ambulance-postgres-master
+    ports:
+      - "5438:5432"
+    volumes:
+      - ./docker/db/scripts/ambulance:/docker-entrypoint-initdb.d/
+      - postgres_master_data:/bitnami/postgresql
+
+  ambulance-postgres-slave:
+    image: bitnami/postgresql-repmgr:latest
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: ABIEV_214
+      POSTGRESQL_USERNAME: customuser
+      POSTGRESQL_PASSWORD: ABIEV_214
+      POSTGRESQL_DATABASE: ABIEV_214
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: ambulance-postgres-master
+      REPMGR_PARTNER_NODES: ambulance-postgres-master,ambulance-postgres-slave
+      REPMGR_NODE_NAME: node-2
+      REPMGR_NODE_NETWORK_NAME: ambulance-postgres-slave
+    ports:
+      - "5439:5432"
+    depends_on:
+      - ambulance-postgres-master
+    volumes:
+      - postgres_slave_data:/bitnami/postgresql
+
+volumes:
+  postgres_master_data:
+    driver: local
+  postgres_slave_data:
+    driver: local
